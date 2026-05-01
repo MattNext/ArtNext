@@ -14,6 +14,7 @@ import {Button} from "@/components/ui/button";
 import {Pencil} from "lucide-react";
 import {authClient} from "@/lib/auth-client";
 import type {Vaerk} from "@/types";
+import {SideIkkeFundet} from "@/pages/SideIkkeFundet";
 
 export default function VaerkSide() {
     const {vaerkId} = useParams<{ vaerkId: string }>();
@@ -22,14 +23,17 @@ export default function VaerkSide() {
     const {data: session} = authClient.useSession();
 
     // henter det pågældende værk
-    const {data: vaerk, isLoading: loading} = useQuery<Vaerk>({
+    const {data: vaerk, isLoading: loading, isError} = useQuery<Vaerk>({
         queryKey: ["vaerk", vaerkId],
         enabled: !!vaerkId,
+        retry: false,
         queryFn: () => fetch(`/api/posts/${vaerkId}`).then((r) => {
             if (!r.ok) throw new Error();
             return r.json();
         }),
     });
+
+    if (isError) return <SideIkkeFundet/>;
 
     // tjekker om brugeren ejer værket, hvilket bruges til at bestemme om rediger og slet knapperne vises
     const isOwner = session?.user.id === vaerk?.user.id;

@@ -2,6 +2,7 @@ import type {PostRepository} from "@/repositories/postRepository";
 import {uploadToBunny, deleteFromBunny} from "@/lib/bunny";
 import {httpError} from "@/routes/utils";
 import sharp from "sharp";
+import {isAdminUserId} from "@/lib/admin";
 
 export class PostService {
     constructor(private posts: PostRepository) {
@@ -46,7 +47,7 @@ export class PostService {
     async deletePost(id: string, requestingUserId: string) {
         const post = await this.posts.findById(id);
         if (!post) throw httpError("Not found", 404);
-        if (post.userId !== requestingUserId) throw httpError("Forbidden", 403);
+        if (post.userId !== requestingUserId && !isAdminUserId(requestingUserId)) throw httpError("Forbidden", 403);
         await deleteFromBunny(post.imagePath);
         await this.posts.delete(id);
     }

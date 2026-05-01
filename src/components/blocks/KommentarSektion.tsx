@@ -22,6 +22,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import type {Comment} from "@/types";
+import {isAdminUserId} from "@/lib/admin";
 
 export function KommentarSektion({vaerkId}: { vaerkId: string }) {
     const [input, setInput] = useState("");
@@ -119,7 +120,7 @@ export function KommentarSektion({vaerkId}: { vaerkId: string }) {
                                     </div>
                                     <p className="text-sm break-words whitespace-pre-wrap">{comment.content}</p>
                                 </div>
-                                {session?.user.id === comment.user.id && (
+                                {(session?.user.id === comment.user.id || isAdminUserId(session?.user.id)) && (
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
                                             <Button

@@ -1,5 +1,6 @@
 import type {CommentRepository} from "@/repositories/commentRepository";
 import {httpError} from "@/routes/utils";
+import {isAdminUserId} from "@/lib/admin";
 
 export class CommentService {
     constructor(private comments: CommentRepository) {}
@@ -18,7 +19,7 @@ export class CommentService {
     async deleteComment(id: string, requestingUserId: string) {
         const comment = await this.comments.findById(id);
         if (!comment) throw httpError("Not found", 404);
-        if (comment.userId !== requestingUserId) throw httpError("Forbidden", 403);
+        if (comment.userId !== requestingUserId && !isAdminUserId(requestingUserId)) throw httpError("Forbidden", 403);
         await this.comments.delete(id);
     }
 }

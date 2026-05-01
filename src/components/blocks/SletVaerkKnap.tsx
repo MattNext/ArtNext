@@ -17,6 +17,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import type {SletVaerkKnapProps} from "@/types";
+import {isAdminUserId} from "@/lib/admin";
 
 export function SletVaerkKnap({vaerkId, uploaderId}: SletVaerkKnapProps) {
     const {data: session} = authClient.useSession();
@@ -24,8 +25,8 @@ export function SletVaerkKnap({vaerkId, uploaderId}: SletVaerkKnapProps) {
     const queryClient = useQueryClient();
     const [deleting, setDeleting] = useState(false);
 
-    // tjekker om brugeren er ejeren af værket, og hvis ikke, så skjuler den komponentet
-    if (session?.user.id !== uploaderId) return null;
+    // tjekker om brugeren er ejeren af værket eller admin, og hvis ikke, så skjuler den komponentet
+    if (session?.user.id !== uploaderId && !isAdminUserId(session?.user.id)) return null;
 
     // sletter et værk
     const handleDelete = async () => {

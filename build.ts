@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import plugin from "bun-plugin-tailwind";
-import { existsSync } from "fs";
-import { rm } from "fs/promises";
+import {existsSync} from "fs";
+import {rm} from "fs/promises";
 import path from "path";
 
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
@@ -108,30 +108,34 @@ const formatFileSize = (bytes: number): string => {
 console.log("\n🚀 Starting build process...\n");
 
 const cliConfig = parseArgs();
-const outdir = cliConfig.outdir || path.join(process.cwd(), "dist");
+const outdir = (cliConfig.outdir as string) || path.join(process.cwd(), "dist");
+delete cliConfig.outdir;
 
 if (existsSync(outdir)) {
   console.log(`🗑️ Cleaning previous build at ${outdir}`);
-  await rm(outdir, { recursive: true, force: true });
+  await rm(outdir, {recursive: true, force: true});
 }
 
 const start = performance.now();
 
-const entrypoints = [...new Bun.Glob("**.html").scanSync("src")]
-  .map(a => path.resolve("src", a))
-  .filter(dir => !dir.includes("node_modules"));
-console.log(`📄 Found ${entrypoints.length} HTML ${entrypoints.length === 1 ? "file" : "files"} to process\n`);
+const envDefines: Record<string, string> = {
+  "process.env.NODE_ENV": JSON.stringify("production"),
+};
+for (const [key, value] of Object.entries(process.env)) {
+  if (key.startsWith("BUN_PUBLIC_")) {
+    envDefines[`process.env.${key}`] = JSON.stringify(value ?? "");
+  }
+}
 
 const result = await Bun.build({
-  entrypoints,
+  entrypoints: [path.resolve("src/index.ts")],
   outdir,
   plugins: [plugin],
+  target: "bun",
+  splitting: true,
   minify: true,
-  target: "browser",
-  sourcemap: "linked",
-  define: {
-    "process.env.NODE_ENV": JSON.stringify("production"),
-  },
+  sourcemap: "none",
+  define: envDefines,
   ...cliConfig,
 });
 

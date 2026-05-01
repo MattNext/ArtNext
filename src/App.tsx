@@ -1,39 +1,34 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { APITester } from "./APITester";
 import "./index.css";
-
-import logo from "./logo.svg";
-import reactLogo from "./react.svg";
+import {lazy, Suspense} from "react";
+import {Route, Routes} from "react-router-dom";
+import {Disclaimer} from "@/components/Disclaimer.tsx";
+const LandingsSide = lazy(() => import("@/pages/LandingsSide.tsx"));
+const SideIkkeFundet = lazy(() => import("@/pages/SideIkkeFundet.tsx"));
+const LoginSide = lazy(() => import("@/pages/LoginSide.tsx"));
+const OpretningsSide = lazy(() => import("@/pages/OpretningsSide.tsx"));
+const OpretVaerkSide = lazy(() => import("@/pages/OpretVaerkSide.tsx"));
+const PortfolioSide = lazy(() => import("@/pages/PortfolioSide.tsx"));
+const IndstillingerSide = lazy(() => import("@/pages/IndstillingerSide.tsx"));
+const VaerkSide = lazy(() => import("@/pages/VaerkSide.tsx"));
+const UdforskSide = lazy(() => import("@/pages/UdforskSide.tsx"));
 
 export function App() {
-  return (
-    <div className="container mx-auto p-8 text-center relative z-10">
-      <div className="flex justify-center items-center gap-8 mb-8">
-        <img
-          src={logo}
-          alt="Bun Logo"
-          className="h-36 p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#646cffaa] scale-120"
-        />
-        <img
-          src={reactLogo}
-          alt="React Logo"
-          className="h-36 p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#61dafbaa] [animation:spin_20s_linear_infinite]"
-        />
-      </div>
-      <Card>
-        <CardHeader className="gap-4">
-          <CardTitle className="text-3xl font-bold">Bun + React</CardTitle>
-          <CardDescription>
-            Edit <code className="rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono">src/App.tsx</code> and save to
-            test HMR
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <APITester />
-        </CardContent>
-      </Card>
-    </div>
-  );
+    return (
+        <Suspense>
+            <Disclaimer/>
+            <Routes>
+                <Route path="/" element={<LandingsSide/>}/>
+                <Route path="/login" element={<LoginSide/>}/>
+                <Route path="/opret" element={<OpretningsSide/>}/>
+                <Route path="/profil/:userId" element={<PortfolioSide/>}/>
+                <Route path="/opret-vaerk" element={<OpretVaerkSide/>}/>
+                <Route path="/indstillinger" element={<IndstillingerSide/>}/>
+                <Route path="/vaerk/:vaerkId" element={<VaerkSide/>}/>
+                <Route path="/udforsk" element={<UdforskSide/>}/>
+                <Route path="*" element={<SideIkkeFundet/>}/>
+            </Routes>
+        </Suspense>
+    );
 }
 
 export default App;

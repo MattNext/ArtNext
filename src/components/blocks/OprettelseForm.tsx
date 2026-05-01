@@ -58,7 +58,7 @@ export function OprettelseForm({...props}: React.ComponentProps<typeof Card>) {
 
         setLoading(true);
 
-        const {error} = await authClient.signUp.email({
+        const {error, data} = await authClient.signUp.email({
             name,
             email,
             password,
@@ -71,7 +71,7 @@ export function OprettelseForm({...props}: React.ComponentProps<typeof Card>) {
 
         if (!error) {
             toast.success("Din konto er nu oprettet.", {position: "top-center"});
-            navigate("/indstillinger");
+            navigate(`/profil/${data?.user.id}`);
         } else {
             toast.error("Oprettelse mislykkedes. Prøv igen.", {position: "top-center"});
             captchaRef.current?.resetCaptcha();

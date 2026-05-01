@@ -19,7 +19,7 @@ export function createPostRoutes(postService: PostService) {
 
                 const {title, description, image} = parsed.data;
                 const buffer = await image.arrayBuffer();
-                const post = await postService.createPost(session.user.id, title, description, buffer);
+                const post = await postService.createPost(session.user.id, title, description, buffer, image.type);
                 return json(post, 201);
             }),
         },

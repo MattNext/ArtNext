@@ -8,15 +8,18 @@ export class PostService {
     constructor(private posts: PostRepository) {
     }
 
-    // opretter et nyt værk + compression
-    async createPost(userId: string, title: string, description: string | undefined, fileBuffer: ArrayBuffer) {
-        const compressed = await sharp(Buffer.from(fileBuffer))
-            .rotate()
-            .resize({width: 1920, withoutEnlargement: true})
-            .jpeg({quality: 80})
-            .toBuffer();
-        const path = `posts/${crypto.randomUUID()}.jpg`;
-        const imageUrl = await uploadToBunny(path, compressed);
+    // opretter et nyt værk + compression (gifs uploades uden compression for at bevare animationen)
+    async createPost(userId: string, title: string, description: string | undefined, fileBuffer: ArrayBuffer, mimeType: string) {
+        const isGif = mimeType === "image/gif";
+        const data = isGif
+            ? new Uint8Array(fileBuffer)
+            : await sharp(Buffer.from(fileBuffer))
+                .rotate()
+                .resize({width: 1920, withoutEnlargement: true})
+                .jpeg({quality: 80})
+                .toBuffer();
+        const path = `posts/${crypto.randomUUID()}.${isGif ? "gif" : "jpg"}`;
+        const imageUrl = await uploadToBunny(path, data);
         return this.posts.create({title, description, imageUrl, imagePath: path, userId});
     }
 

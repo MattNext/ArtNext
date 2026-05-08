@@ -28,4 +28,9 @@ export class LikeService {
         ]);
         return {count, liked: !!liked};
     }
+
+    // henter like status for et værk og gør et eller andet
+    getUserLikedPosts(userId: string) {
+        return this.likes.findLikedPostsByUserId(userId);
+    }
 }

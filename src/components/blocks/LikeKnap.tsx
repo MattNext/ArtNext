@@ -37,6 +37,7 @@ export function LikeKnap({vaerkId}: { vaerkId: string }) {
             const next = (await res.json()) as LikeData;
             queryClient.setQueryData<LikeData>(queryKey, next);
             queryClient.invalidateQueries({queryKey: ["likes", vaerkId]});
+            queryClient.invalidateQueries({queryKey: ["profile"]});
         } catch {
             queryClient.setQueryData(queryKey, prev);
             toast.error("Kunne ikke opdatere like.");

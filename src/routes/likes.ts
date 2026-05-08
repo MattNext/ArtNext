@@ -3,6 +3,12 @@ import {json, getSession, requireSession, handle, type BunRequest} from "@/route
 
 export function createLikeRoutes(likeService: LikeService) {
     return {
+        "/api/users/:userId/likes": {
+            GET: (req: BunRequest) => handle(async () => {
+                return json(await likeService.getUserLikedPosts(req.params.userId));
+            }),
+        },
+
         // route handler for likes på et værk
         "/api/posts/:id/like": {
             GET: (req: BunRequest) => handle(async () => {

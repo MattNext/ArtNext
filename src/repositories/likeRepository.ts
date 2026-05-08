@@ -23,4 +23,21 @@ export class LikeRepository {
     findByUserAndPost(userId: string, postId: string) {
         return this.db.like.findUnique({where: {userId_postId: {userId, postId}}});
     }
+
+    // Her finder den alle likede post som en bruger har liket og sortere efter tidspunktet dvs. nyeste først.
+    // Til sidst bliver der returneret kun post id'et.
+
+    async findLikedPostsByUserId(userId: string) {
+        const likes = await this.db.like.findMany({
+            where: {userId},
+            orderBy: {createdAt: "desc"},
+            include: {
+                post: {
+                    include: {user: {select: {id: true, name: true}}},
+                },
+            },
+        });
+
+        return likes.map((like) => like.post);
+    }
 }
